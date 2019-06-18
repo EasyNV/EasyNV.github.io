@@ -25,15 +25,6 @@ masscan -e tun0 -p0-65535,U:0-65535 10.10.10.8 --rate=1000 Starting masscan 1.0.
     </item>
     
     <item>
-      <title>Emoji Support</title>
-      <link>/posts/2019/06/emoji-support/</link>
-      <pubDate>Fri, 14 Jun 2019 17:00:00 +0700</pubDate>
-      
-      <guid>/posts/2019/06/emoji-support/</guid>
-      <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
       <title>Samuel Adi</title>
       <link>/about/</link>
       <pubDate>Fri, 14 Jun 2019 00:00:00 +0000</pubDate>
