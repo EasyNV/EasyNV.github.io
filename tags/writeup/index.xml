@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Hello</title>
-    <link>/</link>
-    <description>Recent content on Hello</description>
+    <title>Writeup on Hello</title>
+    <link>/tags/writeup/</link>
+    <description>Recent content in Writeup on Hello</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
     <lastBuildDate>Tue, 18 Jun 2019 22:00:00 +0700</lastBuildDate>
     
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/writeup/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -22,24 +22,6 @@
  Background Optimum is a retired vulnerable VM from Hack The Box.
 Information Gathering Let&amp;rsquo;s start with masscan to enumerate the open ports in this host.
 masscan -e tun0 -p0-65535,U:0-65535 10.10.10.8 --rate=1000 Starting masscan 1.0.6 (http://bit.ly/14GZzcT) at 2019-06-18 15:36:07 GMT -- forced options: -sS -Pn -n --randomize-hosts -v --send-eth Initiating SYN Stealth Scan Scanning 1 hosts [131072 ports/host] Discovered open port 80/tcp on 10.</description>
-    </item>
-    
-    <item>
-      <title>Emoji Support</title>
-      <link>/posts/2019/06/emoji-support/</link>
-      <pubDate>Fri, 14 Jun 2019 17:00:00 +0700</pubDate>
-      
-      <guid>/posts/2019/06/emoji-support/</guid>
-      <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Samuel Adi</title>
-      <link>/about/</link>
-      <pubDate>Fri, 14 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/about/</guid>
-      <description>A Information Security enthusiast who likes dogs and to magically break things. On a journey to get OSCP Certification.</description>
     </item>
     
   </channel>
