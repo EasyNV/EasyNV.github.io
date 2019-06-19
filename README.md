@@ -1,1 +1,0 @@
-# easynv.github.io
