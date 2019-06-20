@@ -7,10 +7,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 18 Jun 2019 22:00:00 +0700</lastBuildDate>
+    <lastBuildDate>Thu, 20 Jun 2019 21:20:00 +0700</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Devel: Hack The Box Walkthrough</title>
+      <link>/posts/2019/06/devel-hack-the-box-walkthrough/</link>
+      <pubDate>Thu, 20 Jun 2019 21:20:00 +0700</pubDate>
+      
+      <guid>/posts/2019/06/devel-hack-the-box-walkthrough/</guid>
+      <description>This post documents the complete walkthrough of Devel, a retired vulnerable VM created by ch4p, and hosted at Hack The Box. If you are uncomfortable with spoilers, please stop reading now.
+ Background Devel is a retired vulnerable VM from Hack The Box.
+Information Gathering Let&amp;rsquo;s start with masscan to enumerate the open ports in this host.
+# masscan -e tun0 -p0-65535,U:0-65535 10.10.10.5 --rate=1000 Starting masscan 1.0.6 (http://bit.ly/14GZzcT) at 2019-06-19 09:14:33 GMT -- forced options: -sS -Pn -n --randomize-hosts -v --send-eth Initiating SYN Stealth Scan Scanning 1 hosts [131072 ports/host] Discovered open port 80/tcp on 10.</description>
+    </item>
     
     <item>
       <title>Optimum: Hack The Box Walkthrough</title>
