@@ -46,7 +46,7 @@ Information Gathering Let’s start with a masscan probe to establish the open p
 
 <meta itemprop="datePublished" content="2019-06-21T15:20:00&#43;07:00" />
 <meta itemprop="dateModified" content="2019-06-21T15:20:00&#43;07:00" />
-<meta itemprop="wordCount" content="724">
+<meta itemprop="wordCount" content="732">
 
 
 
@@ -241,6 +241,8 @@ Host script results:
 
 <p>Wow, what do we got here 👀. The box is indeed vulnerable to <code>ms17-010</code> aka <code>EternalBlue</code>, looks like the name of the box give us some hint after all.</p>
 
+<h1 id="ms17-010-aka-eternalblue-aka-the-path-to-root">MS17-010 aka EternalBlue aka the Path to Root</h1>
+
 <p>From out first scan, we know that the OS of the box is <code>Windows 7 SP1</code>. In here I&rsquo;m going to use <a href="https://github.com/worawit/MS17-010" target="_blank">zzz_exploit.py</a>. Don&rsquo;t forget to download the <code>mysmb.py</code> and install <a href="https://github.com/SecureAuthCorp/impacket" target="_blank">impacket</a> too because the script is dependent of it. Otherwise we&rsquo;ll caught some error.</p>
 
 <pre><code>Host script results:
@@ -281,7 +283,7 @@ Host script results:
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/hack-the-box">Hack the box</a></span><span class="tag"><a href="/tags/writeup">Writeup</a></span>
                 </p>
 
-            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>724 Words</p>
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>732 Words</p>
 
             <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-06-21 15:20 &#43;0700</p>
         </div>

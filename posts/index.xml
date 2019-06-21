@@ -131,6 +131,8 @@ Host script results:
 
 <p>Wow, what do we got here 👀. The box is indeed vulnerable to <code>ms17-010</code> aka <code>EternalBlue</code>, looks like the name of the box give us some hint after all.</p>
 
+<h1 id="ms17-010-aka-eternalblue-aka-the-path-to-root">MS17-010 aka EternalBlue aka the Path to Root</h1>
+
 <p>From out first scan, we know that the OS of the box is <code>Windows 7 SP1</code>. In here I&rsquo;m going to use <a href="https://github.com/worawit/MS17-010" target="_blank">zzz_exploit.py</a>. Don&rsquo;t forget to download the <code>mysmb.py</code> and install <a href="https://github.com/SecureAuthCorp/impacket" target="_blank">impacket</a> too because the script is dependent of it. Otherwise we&rsquo;ll caught some error.</p>
 
 <pre><code>Host script results:
