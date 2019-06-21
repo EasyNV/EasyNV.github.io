@@ -21,7 +21,7 @@ Information Gathering Let’s start with a masscan probe to establish the open p
 # masscan -e tun0 -p0-65535,U:0-65535 10.10.10.40 --rate=5000 Starting masscan 1.</description>
             <content type="html"><![CDATA[
 
-<p><img src="/img/blue.jpg" alt="Optimum" /></p>
+<p><img src="/img/blue.jpg" alt="Blue" /></p>
 
 <blockquote>
 <p>This post documents the complete walkthrough of Blue, a retired vulnerable <a href="https://www.hackthebox.eu/home/machines/profile/51" target="_blank">VM</a> created by <a href="https://www.hackthebox.eu/home/users/profile/1" target="_blank">ch4p</a>, and hosted at <a href="https://www.hackthebox.eu/" target="_blank">Hack The Box</a>. If you are uncomfortable with spoilers, please stop reading now.</p>
