@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 20 Jun 2019 21:20:00 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 21 Jun 2019 15:20:00 +0700</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Hack the box</title>
       <link>/tags/hack-the-box/</link>
-      <pubDate>Thu, 20 Jun 2019 21:20:00 +0700</pubDate>
+      <pubDate>Fri, 21 Jun 2019 15:20:00 +0700</pubDate>
       
       <guid>/tags/hack-the-box/</guid>
       <description></description>
@@ -24,7 +24,7 @@
     <item>
       <title>Writeup</title>
       <link>/tags/writeup/</link>
-      <pubDate>Thu, 20 Jun 2019 21:20:00 +0700</pubDate>
+      <pubDate>Fri, 21 Jun 2019 15:20:00 +0700</pubDate>
       
       <guid>/tags/writeup/</guid>
       <description></description>

@@ -7,10 +7,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 20 Jun 2019 21:20:00 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 21 Jun 2019 15:20:00 +0700</lastBuildDate>
     
 	<atom:link href="/tags/hack-the-box/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Blue: Hack The Box Walkthrough</title>
+      <link>/posts/2019/06/blue-hack-the-box-walkthrough/</link>
+      <pubDate>Fri, 21 Jun 2019 15:20:00 +0700</pubDate>
+      
+      <guid>/posts/2019/06/blue-hack-the-box-walkthrough/</guid>
+      <description>This post documents the complete walkthrough of Blue, a retired vulnerable VM created by ch4p, and hosted at Hack The Box. If you are uncomfortable with spoilers, please stop reading now.
+ Background Blue is a retired vulnerable VM from Hack The Box.
+Information Gathering Let’s start with a masscan probe to establish the open ports in the host.
+# masscan -e tun0 -p0-65535,U:0-65535 10.10.10.40 --rate=5000 Starting masscan 1.</description>
+    </item>
     
     <item>
       <title>Devel: Hack The Box Walkthrough</title>
